@@ -13,6 +13,10 @@ var l = 1.0;
 var dt = 0.1; //時間間隔
 var dd = 1.0; //空間間隔
 var v = 4; //速度
+var controls = void 0;
+var texture = void 0;
+var step = 0; //ステップ数
+
 
 //境界条件の設定
 //var BC = "Neumann"; //or "Dirichlet"
@@ -88,8 +92,7 @@ function threeStart() {
 	initThree(); //Three.js初期化関数の実行
 	initCamera(); //カメラ初期化関数の実行
 	initLight(); //光源初期化関数の実行
-	initObject(); //オブジェクト初期化関数の実行
-	loop(); //無限ループ関数の実行
+	initObject(); //オブジェクト初期化関数の実行 //内部でloop
 }
 ////////////////////////////////////////////////////////////////////
 // Three.js初期化関数の定義
@@ -132,7 +135,8 @@ function initCamera() {
 
 	//トラックボールオブジェクトの宣言
 	//trackball = new THREE.TrackballControls(camera, canvasFrame);
-
+	//controls
+	controls = new THREE.OrbitControls(camera);
 	//トラックボール動作範囲のサイズとオフセットの設定
 	// trackball.screen.width = canvasFrame.clientWidth;                        //横幅
 	// trackball.screen.height = canvasFrame.clientHeight;                      //縦幅
@@ -183,7 +187,7 @@ function initLight() {
 //グローバル変数の宣言
 var axis,
     //軸オブジェクト
-lattice,
+lattice = {},
     //２次元格子オブジェクト
 cubes = []; //立方体オブジェクト
 function initObject() {
@@ -201,7 +205,7 @@ function initObject() {
 	//形状オブジェクトの宣言と生成
 	var geometry = new THREE.Geometry();
 	//一片の長さ
-	for (i = 0; i <= N; i++) {
+	for (var i = 0; i <= N; i++) {
 		for (var j = 0; j <= N; j++) {
 			var x = (-N / 2 + i) * l;
 			var y = (-N / 2 + j) * l;
@@ -225,42 +229,58 @@ function initObject() {
 
 	//材質オブジェクトの宣言と生成
 	var loader = new THREE.TextureLoader();
-	var texture = loader.load('./public/img/italy.jpg');
+	//loader.load('./public/img/italy.jpg' , (tex)=> {
+	loader.load('./public/img/flag_bg.png', function (tex) {
 
-	var material = new THREE.MeshBasicMaterial({ color: 0xafeeee, side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
-	//var material = new THREE.MeshBasicMaterial({ map: texture,  side: THREE.DoubleSide});
-	texture.minFilter = THREE.LinearFilter;
-	//立方体オブジェクトの生成
-	lattice = new THREE.Mesh(geometry, material);
-
-	//形状オブジェクトの宣言と生成
-	var geometry = new THREE.CubeGeometry(1, 101, 30);
-	//材質オブジェクトの宣言と生成F
-	var material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF, specular: 0xffffff, shininess: 100, transparent: true, opacity: 0.2 });
-
-	for (var i = 0; i < 4; i++) {
+		//var material = new THREE.MeshPhongMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
+		//var material = new THREE.MeshBasicMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
+		//var material = new THREE.MeshBasicMaterial({ map: texture,  side: THREE.DoubleSide});
+		texture = tex;
+		var material = new THREE.MeshBasicMaterial({ map: texture });
+		texture.minFilter = THREE.LinearFilter;
 		//立方体オブジェクトの生成
-		cubes[i] = new THREE.Mesh(geometry, material);
-		//立方体オブジェクトのシーンへの追加
-		scene.add(cubes[i]);
-	}
-	//立方体オブジェクトの位置座標を設定
-	cubes[0].position.set(50, 0, 15);
-	cubes[1].position.set(-50, 0, 15);
-	cubes[2].position.set(0, 50, 15);
-	cubes[2].rotation.set(0, 0, Math.PI / 2);
-	cubes[3].position.set(0, -50, 15);
-	cubes[3].rotation.set(0, 0, Math.PI / 2);
-}
+		lattice = new THREE.Mesh(geometry, material);
 
+		//形状オブジェクトの宣言と生成
+		var geometry = new THREE.CubeGeometry(1, 101, 30);
+		//材質オブジェクトの宣言と生成F
+		var material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF, specular: 0xffffff, shininess: 100, transparent: true, opacity: 0.2 });
+
+		for (var i = 0; i < 4; i++) {
+			//立方体オブジェクトの生成
+			cubes[i] = new THREE.Mesh(geometry, material);
+			//立方体オブジェクトのシーンへの追加
+			scene.add(cubes[i]);
+		}
+		//立方体オブジェクトの位置座標を設定
+		cubes[0].position.set(50, 0, 15);
+		cubes[1].position.set(-50, 0, 15);
+		cubes[2].position.set(0, 50, 15);
+		cubes[2].rotation.set(0, 0, Math.PI / 2);
+		cubes[3].position.set(0, -50, 15);
+		cubes[3].rotation.set(0, 0, Math.PI / 2);
+
+		var d1 = new Date();
+		while (true) {
+			var d2 = new Date();
+			if (d2 - d1 > 100000) {
+				break;
+			}
+		}
+
+		loop(); //無限ループ関数の実行
+	});
+}
 ////////////////////////////////////////////////////////////////////
 // 無限ループ関数の定義
 ////////////////////////////////////////////////////////////////////
 //グローバル変数の宣言
-var step = 0; //ステップ数
+
+
 function loop() {
 	//トラックボールによるカメラオブジェクトのプロパティの更新
-	//trackball.update();
+	controls.update();
+	texture.needsUpdate = true;
 
 	//時刻の取得
 	var time = step * dt;
