@@ -263,7 +263,7 @@ function initObject() {
 		var d1 = new Date();
 		while (true) {
 			var d2 = new Date();
-			if (d2 - d1 > 100000) {
+			if (d2 - d1 > 10000) {
 				break;
 			}
 		}
