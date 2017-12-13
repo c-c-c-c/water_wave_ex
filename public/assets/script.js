@@ -227,43 +227,6 @@ function initObject() {
 	var loader = new THREE.TextureLoader();
 	var texture = loader.load('./public/img/italy.jpg');
 
-<<<<<<< HEAD
-		//var material = new THREE.MeshPhongMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
-		var material = new THREE.MeshBasicMaterial({ color: 0xafeeee, side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
-		//var material = new THREE.MeshBasicMaterial({ map: texture,  side: THREE.DoubleSide});
-		texture = tex;
-		//var material = new THREE.MeshBasicMaterial({ map: texture });
-		texture.minFilter = THREE.LinearFilter;
-		//立方体オブジェクトの生成
-		lattice = new THREE.Mesh(geometry, material);
-		console.log(lattice);
-		//形状オブジェクトの宣言と生成
-		var geometry = new THREE.CubeGeometry(1, 101, 30);
-		//材質オブジェクトの宣言と生成F
-		var material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF, specular: 0xffffff, shininess: 100, transparent: true, opacity: 0.2 });
-
-		// for (var i = 0; i < 4; i++) {
-		// 	//立方体オブジェクトの生成
-		// 	cubes[i] = new THREE.Mesh(geometry, material);
-		// 	//立方体オブジェクトのシーンへの追加
-		// 	scene.add(cubes[i]);
-		// }
-		// //立方体オブジェクトの位置座標を設定
-		// cubes[0].position.set(50, 0, 15);
-		// cubes[1].position.set(-50, 0, 15);
-		// cubes[2].position.set(0, 50, 15);
-		// cubes[2].rotation.set(0, 0, Math.PI / 2);
-		// cubes[3].position.set(0, -50, 15);
-		// cubes[3].rotation.set(0, 0, Math.PI / 2);
-
-		// const d1 = new Date();
-		// while (true) {
-		// 	let d2 = new Date();
-		// 	if (d2 - d1 > 5000) {
-		// 		break;
-		// 	}
-		// }
-=======
 	var material = new THREE.MeshBasicMaterial({ color: 0xafeeee, side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
 	//var material = new THREE.MeshBasicMaterial({ map: texture,  side: THREE.DoubleSide});
 	texture.minFilter = THREE.LinearFilter;
@@ -274,7 +237,6 @@ function initObject() {
 	var geometry = new THREE.CubeGeometry(1, 101, 30);
 	//材質オブジェクトの宣言と生成F
 	var material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF, specular: 0xffffff, shininess: 100, transparent: true, opacity: 0.2 });
->>>>>>> parent of 645a034... なぜかエラーが出る。。
 
 	for (var i = 0; i < 4; i++) {
 		//立方体オブジェクトの生成
