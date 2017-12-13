@@ -214,13 +214,27 @@
 				geometrys.vertices.push(new THREE.Vector3(x, y, z));
 			}
 		}
-		for (i = 0; i < N; i++) {
-			for (j = 0; j < N; j++) {
+		// for (i = 0; i < N; i++) {
+		// 	for (j = 0; j < N; j++) {
+		// 		var ii = (N + 1) * i + j;
+		// 		//面指定用頂点インデックスを追加
+		// 		geometrys.faces.push(new THREE.Face3(ii, ii + (N + 1), ii + (N + 1) + 1, ii + 1));
+		// 	}
+		// }
+
+		for (var i = 0; i < N; i++) {
+			for (var j = 0; j < N; j++) {
+				//頂点番号
 				var ii = (N + 1) * i + j;
 				//面指定用頂点インデックスを追加
-				geometrys.faces.push(new THREE.Face3(ii, ii + (N + 1), ii + (N + 1) + 1, ii + 1));
+				geometrys.faces.push( new THREE.Face3( ii, ii + (N + 1), ii + (N + 1) +1) );
+				//面指定用頂点インデックスを追加
+				geometrys.faces.push( new THREE.Face3( ii, ii + (N + 1) + 1, ii + 1 ) );
 			}
 		}
+
+
+
 		//面の法線ベクトルを計算
 		geometrys.computeFaceNormals();
 		//面の法線ベクトルから頂点法線ベクトルの計算
@@ -229,12 +243,12 @@
 		//材質オブジェクトの宣言と生成
 		let loader = new THREE.TextureLoader();
 		//loader.load('./public/img/italy.jpg' , (tex)=> {
-		loader.load('./public/img/flag_bg.png' , (tex)=> {
+		loader.load('./public/img/yoko.jpg' , (tex)=> {
 
-			//var material = new THREE.MeshMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
+			var material = new THREE.MeshPhongMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
 			//var material = new THREE.MeshBasicMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
 			texture = tex;
-			var material = new THREE.MeshBasicMaterial({ map: texture,  side: THREE.DoubleSide});
+			//var material = new THREE.MeshPhongMaterial({ map: texture,  side: THREE.DoubleSide});
 			texture.minFilter = THREE.LinearFilter;
 			//立方体オブジェクトの生成
 			lattice = new THREE.Mesh(geometrys, material);
