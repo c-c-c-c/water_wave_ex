@@ -231,40 +231,40 @@
 		loader.load('./public/img/flag_bg.png' , (tex)=> {
 
 			//var material = new THREE.MeshPhongMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
-			//var material = new THREE.MeshBasicMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
+			var material = new THREE.MeshBasicMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
 			//var material = new THREE.MeshBasicMaterial({ map: texture,  side: THREE.DoubleSide});
 			texture = tex;
-			var material = new THREE.MeshBasicMaterial({ map: texture });
+			//var material = new THREE.MeshBasicMaterial({ map: texture });
 			texture.minFilter = THREE.LinearFilter;
 			//立方体オブジェクトの生成
 			lattice = new THREE.Mesh(geometry, material);
-
+			console.log(lattice);
 			//形状オブジェクトの宣言と生成
 			var geometry = new THREE.CubeGeometry(1, 101, 30);
 			//材質オブジェクトの宣言と生成F
 			var material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF,  specular: 0xffffff, shininess: 100, transparent: true, opacity: 0.2 });
 
-			for (var i = 0; i < 4; i++) {
-				//立方体オブジェクトの生成
-				cubes[i] = new THREE.Mesh(geometry, material);
-				//立方体オブジェクトのシーンへの追加
-				scene.add(cubes[i]);
-			}
-			//立方体オブジェクトの位置座標を設定
-			cubes[0].position.set(50, 0, 15);
-			cubes[1].position.set(-50, 0, 15);
-			cubes[2].position.set(0, 50, 15);
-			cubes[2].rotation.set(0, 0, Math.PI / 2);
-			cubes[3].position.set(0, -50, 15);
-			cubes[3].rotation.set(0, 0, Math.PI / 2);
+			// for (var i = 0; i < 4; i++) {
+			// 	//立方体オブジェクトの生成
+			// 	cubes[i] = new THREE.Mesh(geometry, material);
+			// 	//立方体オブジェクトのシーンへの追加
+			// 	scene.add(cubes[i]);
+			// }
+			// //立方体オブジェクトの位置座標を設定
+			// cubes[0].position.set(50, 0, 15);
+			// cubes[1].position.set(-50, 0, 15);
+			// cubes[2].position.set(0, 50, 15);
+			// cubes[2].rotation.set(0, 0, Math.PI / 2);
+			// cubes[3].position.set(0, -50, 15);
+			// cubes[3].rotation.set(0, 0, Math.PI / 2);
 
-			const d1 = new Date();
-			while (true) {
-				let d2 = new Date();
-				if (d2 - d1 > 10000) {
-					break;
-				}
-			}
+			// const d1 = new Date();
+			// while (true) {
+			// 	let d2 = new Date();
+			// 	if (d2 - d1 > 5000) {
+			// 		break;
+			// 	}
+			// }
 
 			loop();       //無限ループ関数の実行
 		});
@@ -321,13 +321,16 @@
 			}
 		}
 
-		var a =0;
+		lattice.geometry.vertices = [];
+
+		var a = 0;
 		for (i = 0; i <= N; i++) {
 			for (j = 0; j <= N; j++) {
 				var x = (-N / 2 + i) * l;
 				var y = (-N / 2 + j) * l;
 				var z = f[1][i][j];
 				//頂点座標データの追加
+				console.log(lattice.geometry.vertices);
 				lattice.geometry.vertices[a].z = z;
 				a++;
 			}
@@ -347,9 +350,7 @@
 		renderer.clear();
 		//レンダリング
 		renderer.render(scene, camera);
-
 		scene.remove(lattice);
-
 
 		//「loop()」関数の呼び出し
 		requestAnimationFrame(loop);
