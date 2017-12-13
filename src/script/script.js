@@ -16,6 +16,7 @@
 	let texture;
 	var step = 0; //ステップ数
 	var geometrys;
+	var geometrys2;
 
 	//境界条件の設定
 	//var BC = "Neumann"; //or "Dirichlet"
@@ -110,11 +111,11 @@
 		if (!renderer) alert('Three.js の初期化に失敗しました');
 		//レンダラーのサイズの設定
 		renderer.setSize(canvasFrame.clientWidth, canvasFrame.clientHeight);
+		//レンダラークリアーカラーの設定
+		renderer.setClearColor(0xffffff);
 		//キャンバスフレームDOM要素にcanvas要素を追加
 		canvasFrame.appendChild(renderer.domElement);
 
-		//レンダラークリアーカラーの設定
-		//renderer.setClearColorHex(0x000000, 1.0);
 
 		//シーンオブジェクトの生成
 		scene = new THREE.Scene();
@@ -188,6 +189,7 @@
 	//グローバル変数の宣言
 	var axis, //軸オブジェクト
 	    lattice={},  //２次元格子オブジェクト
+	    lattice2={},  //２次元格子オブジェクト
 			cubes = [];  //立方体オブジェクト
 	function initObject() {
 /*
@@ -203,6 +205,7 @@
 
 		//形状オブジェクトの宣言と生成
 		geometrys = new THREE.Geometry();
+		geometrys2 = new THREE.Geometry();
 		//一片の長さ
 		for (var i = 0; i <= N; i++) {
 			for (var j = 0; j <= N; j++) {
@@ -212,6 +215,7 @@
 				var z = f[0][i][j];
 				//頂点座標データの追加
 				geometrys.vertices.push(new THREE.Vector3(x, y, z));
+				geometrys2.vertices.push (new THREE.Vector3(x, y, z));
 			}
 		}
 		// for (i = 0; i < N; i++) {
@@ -228,17 +232,20 @@
 				var ii = (N + 1) * i + j;
 				//面指定用頂点インデックスを追加
 				geometrys.faces.push( new THREE.Face3( ii, ii + (N + 1), ii + (N + 1) +1) );
+				geometrys2.faces.push( new THREE.Face3( ii, ii + (N + 1), ii + (N + 1) +1) );
+
 				//面指定用頂点インデックスを追加
 				geometrys.faces.push( new THREE.Face3( ii, ii + (N + 1) + 1, ii + 1 ) );
+				geometrys2.faces.push( new THREE.Face3( ii, ii + (N + 1) + 1, ii + 1 ) );
 			}
 		}
 
-
-
 		//面の法線ベクトルを計算
 		geometrys.computeFaceNormals();
+		geometrys2.computeFaceNormals();
 		//面の法線ベクトルから頂点法線ベクトルの計算
 		geometrys.computeVertexNormals();
+		geometrys2.computeVertexNormals();
 
 		//材質オブジェクトの宣言と生成
 		let loader = new THREE.TextureLoader();
@@ -246,29 +253,38 @@
 		loader.load('./public/img/yoko.jpg' , (tex)=> {
 
 			var material = new THREE.MeshPhongMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
+			var material2 = new THREE.MeshPhongMaterial({ color: 0xeeafee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
 			//var material = new THREE.MeshBasicMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
 			texture = tex;
 			//var material = new THREE.MeshPhongMaterial({ map: texture,  side: THREE.DoubleSide});
 			texture.minFilter = THREE.LinearFilter;
 			//立方体オブジェクトの生成
 			lattice = new THREE.Mesh(geometrys, material);
+			lattice2 = new THREE.Mesh(geometrys2, material2);
 			//形状オブジェクトの宣言と生成
-			var geometry = new THREE.CubeGeometry(1, 101, 30);
+			var geometry_long = new THREE.CubeGeometry(1, 131, 20);
+			var geometry_short = new THREE.CubeGeometry(1, 101, 20);
 			//材質オブジェクトの宣言と生成F
-			var material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF,  specular: 0xffffff, shininess: 100, transparent: true, opacity: 0.2 });
+			//var material = new THREE.MeshPhongMaterial({ color: 0x333333,  specular: 0x333333, shininess: 100, transparent: true, opacity: 0.8 });
+			var material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF,  specular: 0xFFFFFF, shininess: 100, transparent: true, opacity: 0.05 });
 
 			for (var i = 0; i < 4; i++) {
 				//立方体オブジェクトの生成
-				cubes[i] = new THREE.Mesh(geometry, material);
+				if ( i == 2 || i == 3) {
+					cubes[i] = new THREE.Mesh(geometry_long, material);
+				} else {
+					cubes[i] = new THREE.Mesh(geometry_short, material);
+				}
+
 				//立方体オブジェクトのシーンへの追加
 				scene.add(cubes[i]);
 			}
 			//立方体オブジェクトの位置座標を設定
-			cubes[0].position.set(50, 0, 15);
-			cubes[1].position.set(-50, 0, 15);
-			cubes[2].position.set(0, 50, 15);
+			cubes[0].position.set(65, 0, 10);
+			cubes[1].position.set(-65, 0, 10);
+			cubes[2].position.set(0, 50, 10);
 			cubes[2].rotation.set(0, 0, Math.PI / 2);
-			cubes[3].position.set(0, -50, 15);
+			cubes[3].position.set(0, -50, 10);
 			cubes[3].rotation.set(0, 0, Math.PI / 2);
 
 			// const d1 = new Date();
@@ -302,9 +318,7 @@
 			time = step * dt;
 			for (var i = 1; i <= N - 1; i++) {
 				for (var j = 1; j <= N - 1; j++) {
-					f[2][i][j] = 2.0 * f[1][i][j] - f[0][i][j] + v * v * dt * dt / (dd * dd) * (f[1][i + 1][j] + f[1][i - 1][j] + f[1][i][j + 1] + f[1][i][j - 1] - 4.0 * f[1][i][j]);
-				}
-			}
+					f[2][i][j] = 2.0 * f[1][i][j] - f[0][i][j] + v * v * dt * dt / (dd * dd) * (f[1][i + 1][j] + f[1][i - 1][j] + f[1][i][j + 1] + f[1][i][j - 1] - 4.0 * f[1][i][j]); } }
 			if (BC == "Dirichlet") {
 				//ディリクレ境界条件
 				for (var i = 0; i <= N; i++) {
@@ -344,25 +358,34 @@
 				//頂点座標データの追加
 				//console.log(lattice.geometry.vertices);
 				lattice.geometry.vertices[a].z = z;
+				lattice2.geometry.vertices[a].z = z;
+				lattice.geometry.vertices[a].x = x-15;
+				lattice2.geometry.vertices[a].x = x+15;
 				a++;
 			}
 		}
 
 		lattice.geometry.normalsNeedUpdate = true;
+		lattice2.geometry.normalsNeedUpdate = true;
 		lattice.geometry.verticesNeedUpdate = true;
+		lattice2.geometry.verticesNeedUpdate = true;
 		//面の法線ベクトルを計算
 		lattice.geometry.computeFaceNormals();
+		lattice2.geometry.computeFaceNormals();
 		//面の法線ベクトルから頂点法線ベクトルの計算
 		lattice.geometry.computeVertexNormals();
+		lattice2.geometry.computeVertexNormals();
 
 		//立方体オブジェクトのシーンへの追加
 		scene.add(lattice);
+		scene.add(lattice2);
 
 		//クリアーカラーで初期化
 		renderer.clear();
 		//レンダリング
 		renderer.render(scene, camera);
 		scene.remove(lattice);
+		scene.remove(lattice2);
 
 		//「loop()」関数の呼び出し
 		requestAnimationFrame(loop);
