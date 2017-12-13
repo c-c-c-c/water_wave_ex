@@ -302,7 +302,6 @@ function loop() {
 		}
 	}
 
-	lattice.geometry.vertices = [];
 
 	var a = 0;
 	for (i = 0; i <= N; i++) {
@@ -311,7 +310,6 @@ function loop() {
 			var y = (-N / 2 + j) * l;
 			var z = f[1][i][j];
 			//頂点座標データの追加
-			console.log(lattice.geometry.vertices);
 			lattice.geometry.vertices[a].z = z;
 			a++;
 		}
