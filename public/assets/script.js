@@ -7,16 +7,17 @@
 // 物理系の定義
 ////////////////////////////////////////////////////////////////////
 //２次元正方格子のサイズ
-var N = 100;
-var l = 1.0;
+var N = 1;
+var l = 40.0;
 
+//var dt = 0.1; //時間間隔
 var dt = 0.1; //時間間隔
 var dd = 1.0; //空間間隔
-var v = 4; //速度
+var v = 1; //速度
 var controls = void 0;
 var texture = void 0;
 var step = 0; //ステップ数
-
+var geometrys;
 
 //境界条件の設定
 //var BC = "Neumann"; //or "Dirichlet"
@@ -203,7 +204,7 @@ function initObject() {
 	initialCondition(peakPosition);
 
 	//形状オブジェクトの宣言と生成
-	var geometry = new THREE.Geometry();
+	geometrys = new THREE.Geometry();
 	//一片の長さ
 	for (var i = 0; i <= N; i++) {
 		for (var j = 0; j <= N; j++) {
@@ -212,53 +213,51 @@ function initObject() {
 			//初期条件を与える
 			var z = f[0][i][j];
 			//頂点座標データの追加
-			geometry.vertices.push(new THREE.Vector3(x, y, z));
+			geometrys.vertices.push(new THREE.Vector3(x, y, z));
 		}
 	}
 	for (i = 0; i < N; i++) {
 		for (j = 0; j < N; j++) {
 			var ii = (N + 1) * i + j;
 			//面指定用頂点インデックスを追加
-			geometry.faces.push(new THREE.Face3(ii, ii + (N + 1), ii + (N + 1) + 1, ii + 1));
+			geometrys.faces.push(new THREE.Face3(ii, ii + (N + 1), ii + (N + 1) + 1, ii + 1));
 		}
 	}
 	//面の法線ベクトルを計算
-	geometry.computeFaceNormals();
+	geometrys.computeFaceNormals();
 	//面の法線ベクトルから頂点法線ベクトルの計算
-	geometry.computeVertexNormals();
+	geometrys.computeVertexNormals();
 
 	//材質オブジェクトの宣言と生成
 	var loader = new THREE.TextureLoader();
 	//loader.load('./public/img/italy.jpg' , (tex)=> {
 	loader.load('./public/img/flag_bg.png', function (tex) {
 
-		//var material = new THREE.MeshPhongMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
-		var material = new THREE.MeshBasicMaterial({ color: 0xafeeee, side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
-		//var material = new THREE.MeshBasicMaterial({ map: texture,  side: THREE.DoubleSide});
+		//var material = new THREE.MeshMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
+		//var material = new THREE.MeshBasicMaterial({ color: 0xafeeee,  side: THREE.DoubleSide, specular: 0xffffff, shininess: 250 });
 		texture = tex;
-		//var material = new THREE.MeshBasicMaterial({ map: texture });
+		var material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
 		texture.minFilter = THREE.LinearFilter;
 		//立方体オブジェクトの生成
-		lattice = new THREE.Mesh(geometry, material);
-		console.log(lattice);
+		lattice = new THREE.Mesh(geometrys, material);
 		//形状オブジェクトの宣言と生成
 		var geometry = new THREE.CubeGeometry(1, 101, 30);
 		//材質オブジェクトの宣言と生成F
 		var material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF, specular: 0xffffff, shininess: 100, transparent: true, opacity: 0.2 });
 
-		// for (var i = 0; i < 4; i++) {
-		// 	//立方体オブジェクトの生成
-		// 	cubes[i] = new THREE.Mesh(geometry, material);
-		// 	//立方体オブジェクトのシーンへの追加
-		// 	scene.add(cubes[i]);
-		// }
-		// //立方体オブジェクトの位置座標を設定
-		// cubes[0].position.set(50, 0, 15);
-		// cubes[1].position.set(-50, 0, 15);
-		// cubes[2].position.set(0, 50, 15);
-		// cubes[2].rotation.set(0, 0, Math.PI / 2);
-		// cubes[3].position.set(0, -50, 15);
-		// cubes[3].rotation.set(0, 0, Math.PI / 2);
+		for (var i = 0; i < 4; i++) {
+			//立方体オブジェクトの生成
+			cubes[i] = new THREE.Mesh(geometry, material);
+			//立方体オブジェクトのシーンへの追加
+			scene.add(cubes[i]);
+		}
+		//立方体オブジェクトの位置座標を設定
+		cubes[0].position.set(50, 0, 15);
+		cubes[1].position.set(-50, 0, 15);
+		cubes[2].position.set(0, 50, 15);
+		cubes[2].rotation.set(0, 0, Math.PI / 2);
+		cubes[3].position.set(0, -50, 15);
+		cubes[3].rotation.set(0, 0, Math.PI / 2);
 
 		// const d1 = new Date();
 		// while (true) {
@@ -322,8 +321,6 @@ function loop() {
 		}
 	}
 
-	lattice.geometry.vertices = [];
-
 	var a = 0;
 	for (i = 0; i <= N; i++) {
 		for (j = 0; j <= N; j++) {
@@ -331,7 +328,7 @@ function loop() {
 			var y = (-N / 2 + j) * l;
 			var z = f[1][i][j];
 			//頂点座標データの追加
-			console.log(lattice.geometry.vertices);
+			//console.log(lattice.geometry.vertices);
 			lattice.geometry.vertices[a].z = z;
 			a++;
 		}
